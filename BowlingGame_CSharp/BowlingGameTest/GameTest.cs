@@ -1,14 +1,15 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+using BowlingGame;
 
 namespace BowlingGameTest
 {
     [TestClass]
-    public class Game
+    public class GameTest
     {
         [TestMethod]
-        public void TestMethod1()
+        public void TestCreate()
         {
+            new Game();
         }
     }
 }
