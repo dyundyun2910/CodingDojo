@@ -10,7 +10,7 @@ namespace BowlingGame
         private const int MAX_ROLLS_IN_FRAME = 2;
         private const int ROLLS_IN_STRIKE = 1;
 
-        private List<int> rolls;
+        private readonly List<int> rolls;
 
         public ScoreCalculator(List<int> rolls)
         {
@@ -21,7 +21,7 @@ namespace BowlingGame
         {
             int score = 0;
             int current = 0;
-            for (int frame = 0; frame < 10; frame++)
+            for (int frame = 0; frame < MAX_FRAMES; frame++)
             {
                 score += CalculateFrameScore(current);
                 current = AdjustCurrentRoll(current);
@@ -51,12 +51,12 @@ namespace BowlingGame
             if (IsStrike(current))
             {
                 score += MAX_PINS_IN_FRAME;
-                score += GetStrikeBonus(current);
+                score += BonusServer.GetSpareBonus(rolls.Skip(current + 1));
             }
             else if (IsSpare(current))
             {
                 score += MAX_PINS_IN_FRAME;
-                score += GetSpareBonus(current);
+                score += BonusServer.GetSpareBonus(rolls.Skip(current + 2));
 
             }
             else
@@ -72,16 +72,6 @@ namespace BowlingGame
             return rolls.Skip(current).Take(2).Sum();
         }
 
-        private int GetSpareBonus(int current)
-        {
-            return rolls.Skip(current + 2).Take(1).Sum();
-        }
-
-        private int GetStrikeBonus(int current)
-        {
-            return rolls.Skip(current + 1).Take(2).Sum();
-        }
-
         private bool IsSpare(int current)
         {
             return GetCurrentFramePins(current) == MAX_PINS_IN_FRAME;
@@ -91,5 +81,19 @@ namespace BowlingGame
         {
             return rolls.Skip(current).Take(1).Sum() == MAX_PINS_IN_FRAME;
         }
+    }
+
+    public static class BonusServer
+    {
+        public static int GetSpareBonus(IEnumerable<int> nextRolls)
+        {
+            return nextRolls.Take(1).Sum();
+        }
+
+        private static int GetStrikeBonus(IEnumerable<int> nextRolls)
+        {
+            return nextRolls.Take(2).Sum();
+        }
+
     }
 }
