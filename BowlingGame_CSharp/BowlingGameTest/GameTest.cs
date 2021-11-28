@@ -31,10 +31,7 @@ namespace BowlingGameTest
         [TestMethod]
         public void TestGutterGame()
         {
-            for (int i = 0; i < 20; i++)
-            {
-                game.Roll(0);
-            }
+            MultiRollBySamePins(knockedDownPins: 0, rollCount: 20);
 
             Assert.AreEqual(0, game.Score());
         }
@@ -42,13 +39,17 @@ namespace BowlingGameTest
         [TestMethod]
         public void TestAllOnes()
         {
-            for (int i = 0; i < 20; i++)
-            {
-                game.Roll(1);
-            }
+            MultiRollBySamePins(knockedDownPins: 1, rollCount: 20);
 
             Assert.AreEqual(20, game.Score());
         }
 
+        private void MultiRollBySamePins(int knockedDownPins, int rollCount)
+        {
+            for (int i = 0; i < rollCount; i++)
+            {
+                game.Roll(knockedDownPins);
+            }
+        }
     }
 }
