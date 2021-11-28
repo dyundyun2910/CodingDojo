@@ -44,6 +44,18 @@ namespace BowlingGameTest
             Assert.AreEqual(20, game.Score());
         }
 
+        [TestMethod]
+        public void TestOneSpare()
+        {
+            game.Roll(5);
+            game.Roll(5);   // Spare
+
+            game.Roll(3);
+            MultiRollBySamePins(knockedDownPins: 1, rollCount: 17);
+
+            Assert.AreEqual(16, game.Score());
+        }
+
         private void MultiRollBySamePins(int knockedDownPins, int rollCount)
         {
             for (int i = 0; i < rollCount; i++)
