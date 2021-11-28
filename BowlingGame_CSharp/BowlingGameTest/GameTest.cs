@@ -14,7 +14,6 @@ namespace BowlingGameTest
             game = new Game();
         }
 
-
         [TestMethod]
         public void TestOneRoll()
         {
@@ -27,6 +26,17 @@ namespace BowlingGameTest
         {
             game.Roll(2);
             Assert.AreEqual(2, game.Score());
+        }
+
+        [TestMethod]
+        public void TestGutterGame()
+        {
+            for (int i = 0; i < 20; i++)
+            {
+                game.Roll(0);
+            }
+
+            Assert.AreEqual(0, game.Score());
         }
     }
 }
