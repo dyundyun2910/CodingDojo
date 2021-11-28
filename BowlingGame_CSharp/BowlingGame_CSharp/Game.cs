@@ -1,19 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BowlingGame
 {
     public class Game
     {
-        private int score = 0;
+        private List<int> rolls = new List<int>();
 
         public void Roll(int pins)
         {
-            score += pins;
+            rolls.Add(pins);
+
         }
 
         public int Score()
         {
-            return score;
+            return rolls.Sum();
         }
     }
 }
