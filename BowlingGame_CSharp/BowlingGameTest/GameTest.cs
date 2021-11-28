@@ -69,6 +69,14 @@ namespace BowlingGameTest
             Assert.AreEqual(24, game.Score());
         }
 
+        [TestMethod]
+        public void TestPerfectGame()
+        {
+            MultiRollBySamePins(knockedDownPins: 10, rollCount: 12);
+
+            Assert.AreEqual(300, game.Score());
+        }
+
         private void MultiRollBySamePins(int knockedDownPins, int rollCount)
         {
             for (int i = 0; i < rollCount; i++)
