@@ -25,31 +25,45 @@ namespace BowlingGame
             int current = 0;
             for (int frame = 0; frame < MAX_FRAMES; frame++)
             {
-                if (IsStrike(current))
-                {
-                    score += 10;
-                    score += GetStrikeBonus(current);
-                }
-                else if (IsSpare(current))
-                {
-                    score += MAX_PINS_IN_FRAME;
-                    score += GetSpareBonus(current);
+                score += CalculateFrameScore(current);
+                current = AdjustCurrentRoll(current);
+            }
 
-                }
-                else
-                {
-                    score += GetCurrentFramePins(current);
-                }
+            return score;
+        }
 
-                if (IsStrike(current))
-                {
-                    current += 1;
-                }
-                else
-                {
-                    current += MAX_ROLLS_IN_FRAME;
+        private int AdjustCurrentRoll(int current)
+        {
+            if (IsStrike(current))
+            {
+                current += 1;
+            }
+            else
+            {
+                current += MAX_ROLLS_IN_FRAME;
+            }
 
-                }
+            return current;
+        }
+
+        private int CalculateFrameScore(int current)
+        {
+            int score = 0;
+
+            if (IsStrike(current))
+            {
+                score += 10;
+                score += GetStrikeBonus(current);
+            }
+            else if (IsSpare(current))
+            {
+                score += MAX_PINS_IN_FRAME;
+                score += GetSpareBonus(current);
+
+            }
+            else
+            {
+                score += GetCurrentFramePins(current);
             }
 
             return score;
