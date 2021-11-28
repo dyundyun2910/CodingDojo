@@ -27,24 +27,10 @@ namespace BowlingGame
             for (int frame = 0; frame < BowlingSpec.MAX_FRAMES; frame++)
             {
                 score += CalculateFrameScore(current);
-                current = AdjustCurrentRoll(current);
+                current = CurrentRollAdjuster.Adjust(rolls.Skip(current), current);
             }
 
             return score;
-        }
-
-        private int AdjustCurrentRoll(int current)
-        {
-            if (BonusJudgement.IsStrike(rolls.Skip(current)))
-            {
-                current += BowlingSpec.ROLLS_IN_STRIKE;
-            }
-            else
-            {
-                current += BowlingSpec.MAX_ROLLS_IN_FRAME;
-            }
-
-            return current;
         }
 
         private int CalculateFrameScore(int current)
@@ -75,30 +61,40 @@ namespace BowlingGame
         }
     }
 
+    public static class CurrentRollAdjuster
+    {
+        public static int Adjust(IEnumerable<int> currentRolls, int current)
+        {
+            int currentRollCount = BonusJudgement.IsStrike(currentRolls) ? BowlingSpec.ROLLS_IN_STRIKE : BowlingSpec.MAX_ROLLS_IN_FRAME;
+            return current + currentRollCount;
+        }
+    }
+
     public static class BonusJudgement
     {
         public static bool IsSpare(IEnumerable<int> currentRolls)
         {
-            return currentRolls.Take(2).Sum() == BowlingSpec.MAX_PINS_IN_FRAME;
+            return currentRolls.Take(BowlingSpec.MAX_ROLLS_IN_FRAME).Sum() == BowlingSpec.MAX_PINS_IN_FRAME;
         }
 
         public static bool IsStrike(IEnumerable<int> currentRolls)
         {
-            return currentRolls.Take(1).Sum() == BowlingSpec.MAX_PINS_IN_FRAME;
+            return currentRolls.Take(BowlingSpec.ROLLS_IN_STRIKE).Sum() == BowlingSpec.MAX_PINS_IN_FRAME;
         }
-
     }
 
     public static class BonusServer
     {
         public static int GetSpareBonus(IEnumerable<int> nextRolls)
         {
-            return nextRolls.Take(1).Sum();
+            const int bonusRollsForSpare = 1;
+            return nextRolls.Take(bonusRollsForSpare).Sum();
         }
 
         public static int GetStrikeBonus(IEnumerable<int> nextRolls)
         {
-            return nextRolls.Take(2).Sum();
+            const int bonusRollsForStrike = 2;
+            return nextRolls.Take(bonusRollsForStrike).Sum();
         }
     }
 }
