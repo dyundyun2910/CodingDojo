@@ -51,7 +51,7 @@ namespace BowlingGameTest
             game.Roll(5);   // Spare
 
             game.Roll(3);
-            MultiRollBySamePins(knockedDownPins: 1, rollCount: 17);
+            MultiRollBySamePins(knockedDownPins: 0, rollCount: 17);
 
             Assert.AreEqual(16, game.Score());
         }
