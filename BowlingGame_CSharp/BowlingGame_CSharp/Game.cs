@@ -6,11 +6,12 @@ namespace BowlingGame
 {
     public class Game
     {
-        private List<int> rolls = new List<int>();
+        private readonly List<int> rolls = new List<int>();
 
         private const int MAX_PINS_IN_FRAME = 10;
         private const int MAX_FRAMES = 10;
         private const int MAX_ROLLS_IN_FRAME = 2;
+        private const int ROLLS_IN_STRIKE = 1;
 
         public void Roll(int pins)
         {
@@ -36,7 +37,7 @@ namespace BowlingGame
         {
             if (IsStrike(current))
             {
-                current += 1;
+                current += ROLLS_IN_STRIKE;
             }
             else
             {
@@ -52,7 +53,7 @@ namespace BowlingGame
 
             if (IsStrike(current))
             {
-                score += 10;
+                score += MAX_PINS_IN_FRAME;
                 score += GetStrikeBonus(current);
             }
             else if (IsSpare(current))
