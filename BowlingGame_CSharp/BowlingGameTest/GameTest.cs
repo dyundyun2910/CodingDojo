@@ -6,26 +6,27 @@ namespace BowlingGameTest
     [TestClass]
     public class GameTest
     {
-        [TestMethod]
-        public void TestCreate()
+        private Game game;
+
+        [TestInitialize]
+        public void SetUp()
         {
-            new Game();
+            game = new Game();
         }
+
 
         [TestMethod]
         public void TestOneRoll()
         {
-            var g = new Game();
-            g.Roll(3);
-            Assert.AreEqual(3, g.Score());
+            game.Roll(3);
+            Assert.AreEqual(3, game.Score());
         }
 
         [TestMethod]
         public void TestOneRoll2()
         {
-            var g = new Game();
-            g.Roll(2);
-            Assert.AreEqual(2, g.Score());
+            game.Roll(2);
+            Assert.AreEqual(2, game.Score());
         }
     }
 }
