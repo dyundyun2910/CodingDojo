@@ -3,13 +3,16 @@ using System.Linq;
 
 namespace BowlingGame
 {
+    public static class BowlingSpec
+    {
+        public const int MAX_PINS_IN_FRAME = 10;
+        public const int MAX_FRAMES = 10;
+        public const int MAX_ROLLS_IN_FRAME = 2;
+        public const int ROLLS_IN_STRIKE = 1;
+    }
+
     public class ScoreCalculator
     {
-        private const int MAX_PINS_IN_FRAME = 10;
-        private const int MAX_FRAMES = 10;
-        private const int MAX_ROLLS_IN_FRAME = 2;
-        private const int ROLLS_IN_STRIKE = 1;
-
         private readonly List<int> rolls;
 
         public ScoreCalculator(List<int> rolls)
@@ -21,7 +24,7 @@ namespace BowlingGame
         {
             int score = 0;
             int current = 0;
-            for (int frame = 0; frame < MAX_FRAMES; frame++)
+            for (int frame = 0; frame < BowlingSpec.MAX_FRAMES; frame++)
             {
                 score += CalculateFrameScore(current);
                 current = AdjustCurrentRoll(current);
@@ -32,13 +35,13 @@ namespace BowlingGame
 
         private int AdjustCurrentRoll(int current)
         {
-            if (IsStrike(current))
+            if (BonusJudgement.IsStrike(rolls.Skip(current)))
             {
-                current += ROLLS_IN_STRIKE;
+                current += BowlingSpec.ROLLS_IN_STRIKE;
             }
             else
             {
-                current += MAX_ROLLS_IN_FRAME;
+                current += BowlingSpec.MAX_ROLLS_IN_FRAME;
             }
 
             return current;
@@ -48,16 +51,15 @@ namespace BowlingGame
         {
             int score = 0;
 
-            if (IsStrike(current))
+            if (BonusJudgement.IsStrike(rolls.Skip(current)))
             {
-                score += MAX_PINS_IN_FRAME;
-                score += BonusServer.GetSpareBonus(rolls.Skip(current + 1));
+                score += BowlingSpec.MAX_PINS_IN_FRAME;
+                score += BonusServer.GetStrikeBonus(rolls.Skip(current + 1));
             }
-            else if (IsSpare(current))
+            else if (BonusJudgement.IsSpare(rolls.Skip(current)))
             {
-                score += MAX_PINS_IN_FRAME;
+                score += BowlingSpec.MAX_PINS_IN_FRAME;
                 score += BonusServer.GetSpareBonus(rolls.Skip(current + 2));
-
             }
             else
             {
@@ -71,16 +73,20 @@ namespace BowlingGame
         {
             return rolls.Skip(current).Take(2).Sum();
         }
+    }
 
-        private bool IsSpare(int current)
+    public static class BonusJudgement
+    {
+        public static bool IsSpare(IEnumerable<int> currentRolls)
         {
-            return GetCurrentFramePins(current) == MAX_PINS_IN_FRAME;
+            return currentRolls.Take(2).Sum() == BowlingSpec.MAX_PINS_IN_FRAME;
         }
 
-        private bool IsStrike(int current)
+        public static bool IsStrike(IEnumerable<int> currentRolls)
         {
-            return rolls.Skip(current).Take(1).Sum() == MAX_PINS_IN_FRAME;
+            return currentRolls.Take(1).Sum() == BowlingSpec.MAX_PINS_IN_FRAME;
         }
+
     }
 
     public static class BonusServer
@@ -90,10 +96,9 @@ namespace BowlingGame
             return nextRolls.Take(1).Sum();
         }
 
-        private static int GetStrikeBonus(IEnumerable<int> nextRolls)
+        public static int GetStrikeBonus(IEnumerable<int> nextRolls)
         {
             return nextRolls.Take(2).Sum();
         }
-
     }
 }
