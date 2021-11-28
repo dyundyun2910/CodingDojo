@@ -25,7 +25,12 @@ namespace BowlingGame
             int current = 0;
             for (int frame = 0; frame < MAX_FRAMES; frame++)
             {
-                if (IsSpare(current))
+                if (IsStrike(current))
+                {
+                    score += 10;
+                    score += GetStrikeBonus(current);
+                }
+                else if (IsSpare(current))
                 {
                     score += MAX_PINS_IN_FRAME;
                     score += GetSpareBonus(current);
@@ -36,7 +41,15 @@ namespace BowlingGame
                     score += GetCurrentFramePins(current);
                 }
 
-                current += MAX_ROLLS_IN_FRAME;
+                if (IsStrike(current))
+                {
+                    current += 1;
+                }
+                else
+                {
+                    current += MAX_ROLLS_IN_FRAME;
+
+                }
             }
 
             return score;
@@ -49,12 +62,23 @@ namespace BowlingGame
 
         private bool IsSpare(int current)
         {
-            return GetCurrentFramePins(current) == 10;
+            return GetCurrentFramePins(current) == MAX_PINS_IN_FRAME;
+        }
+
+        private bool IsStrike(int current)
+        {
+            return rolls.Skip(current).Take(1).Sum() == MAX_PINS_IN_FRAME;
         }
 
         private int GetSpareBonus(int current)
         {
             return rolls.Skip(current + 2).Take(1).Sum();
         }
+
+        private int GetStrikeBonus(int current)
+        {
+            return rolls.Skip(current + 1).Take(2).Sum();
+        }
+
     }
 }
