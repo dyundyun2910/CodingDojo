@@ -55,8 +55,10 @@ namespace BowlingGame
 
         private int CalculateFrame(Frame frame, Frames frames)
         {
-            var bonusCount = IsSpare(frame) ? 1 : 0;
             Rolls restRolls = frames.GetRestRolls(frame);
+
+            const int spareBonusCount = 1;
+            var bonusCount = IsSpare(frame) ? spareBonusCount : 0;
 
             return restRolls.ToList().Take(bonusCount).Sum(roll => roll.ToInt());
         }
@@ -75,13 +77,16 @@ namespace BowlingGame
 
         internal void Roll(Roll roll)
         {
-            if (frames.Last().IsFull())
+            var lastFrame = frames.Last();
+            if (lastFrame.IsFull())
             {
                 if (IsFull()) throw new InvalidOperationException();
+
                 frames.Add(new Frame());
+                lastFrame = frames.Last();
             }
 
-            frames.Last().AddRoll(roll);
+            lastFrame.AddRoll(roll);
         }
 
         private bool IsFull()
@@ -96,13 +101,14 @@ namespace BowlingGame
 
         internal Rolls GetRestRolls(Frame currentFrame)
         {
-            var restFrames = frames.Where(frame => frames.IndexOf(frame) > frames.IndexOf(currentFrame));
+            var restFrames = frames.Where(frame => frames.IndexOf(frame) > frames.IndexOf(currentFrame)).ToList();
 
             var rolls = new List<Roll>();
-            restFrames.ToList().ForEach(frame =>
+            restFrames.ForEach(frame =>
             {
                 rolls.AddRange((frame.ToListRolls()));
             });
+
             return new Rolls(rolls);
         }
     }
