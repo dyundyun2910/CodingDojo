@@ -66,8 +66,15 @@ namespace BowlingGame
     {
         internal static int GetBonusCount(Frame frame)
         {
-            var spareRule = new SpareRule();
-            return spareRule.IsSatisfiedBy(frame) ? spareRule.GetBonusCount() : 0;
+            var rules = new List<IBonusRule>(){
+                new SpareRule(),
+                new StrikeRule()
+            };
+
+            return rules.Sum(rule =>
+            {
+                return rule.IsSatisfiedBy(frame) ? rule.GetBonusCount() : 0;
+            });
         }
     }
 
@@ -77,11 +84,26 @@ namespace BowlingGame
         int GetBonusCount();
     }
 
+    internal class StrikeRule : IBonusRule
+    {
+        public bool IsSatisfiedBy(Frame frame)
+        {
+            return frame.Score() == Roll.MAX_PIN
+                && frame.ToListRolls().Count == 1;
+        }
+
+        public int GetBonusCount()
+        {
+            return 2;
+        }
+    }
+
     internal class SpareRule : IBonusRule
     {
         public bool IsSatisfiedBy(Frame frame)
         {
-            return frame.Score() == Roll.MAX_PIN;
+            return frame.Score() == Roll.MAX_PIN
+                && frame.ToListRolls().Count == Frame.MAX_ROLLS;
         }
 
         public int GetBonusCount()
@@ -137,7 +159,7 @@ namespace BowlingGame
 
     internal class Frame
     {
-        private const int MAX_ROLLS = 2;
+        internal const int MAX_ROLLS = 2;
 
         private Rolls rolls = new Rolls();
 
@@ -149,7 +171,8 @@ namespace BowlingGame
 
         internal bool IsFull()
         {
-            return rolls.Count() >= MAX_ROLLS;
+            return rolls.Count() >= MAX_ROLLS
+                || rolls.Sum() == Roll.MAX_PIN;
         }
 
         internal int Score()
