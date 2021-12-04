@@ -43,9 +43,7 @@ namespace BowlingGame
 
         public int Score()
         {
-            int score = 0;
-            frames.ForEach(frame => score += frame.Score());
-            return score;
+            return frames.Sum(frame => frame.Score());
         }
     }
 
@@ -69,9 +67,7 @@ namespace BowlingGame
 
         public int Score()
         {
-            int score = 0;
-            rolls.ForEach(roll => score += roll.ToInt());
-            return score;
+            return rolls.Sum(roll => roll.ToInt());
         }
     }
 
