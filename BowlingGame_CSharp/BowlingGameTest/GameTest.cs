@@ -48,10 +48,7 @@ namespace BowlingGameTest
         [TestMethod]
         public void TestNormalRollCountIs20()
         {
-            for (int i = 0; i < 20; i++)
-            {
-                g.Roll(0);
-            }
+            ManyRolls(rollCount: 20, pins: 0);
 
             Assert.ThrowsException<InvalidOperationException>(() => g.Roll(1));
         }
@@ -59,12 +56,17 @@ namespace BowlingGameTest
         [TestMethod]
         public void TestGutterGame()
         {
-            for (int i = 0; i < 20; i++)
-            {
-                g.Roll(0);
-            }
+            ManyRolls(rollCount: 20, pins: 0);
 
             Assert.AreEqual(0, g.Score());
+        }
+
+        private void ManyRolls(int rollCount, int pins)
+        {
+            for (int i = 0; i < rollCount; i++)
+            {
+                g.Roll(pins);
+            }
         }
     }
 }
