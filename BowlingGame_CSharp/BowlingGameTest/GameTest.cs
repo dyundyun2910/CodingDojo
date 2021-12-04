@@ -15,7 +15,6 @@ namespace BowlingGameTest
             g = new Game();
         }
 
-
         [TestMethod]
         public void TestOneRoll()
         {
@@ -107,7 +106,6 @@ namespace BowlingGameTest
 
             Assert.AreEqual(30, g.Score());
         }
-
 
         [TestMethod]
         public void TestTenFrameSpare()
