@@ -65,7 +65,7 @@ namespace BowlingGame
 
     internal class BonusRule
     {
-        static List<IBonusRule> rules = new List<IBonusRule>(){
+        static readonly List<IBonusRule> rules = new List<IBonusRule>(){
                 new SpareRule(),
                 new StrikeRule(),
                 new FinalFrameRule()
