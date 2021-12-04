@@ -66,12 +66,21 @@ namespace BowlingGame
     {
         internal static int GetBonusCount(Frame frame)
         {
-            const int spareBonusCount = 1;
-            return IsSpare(frame) ? spareBonusCount : 0;
+            var spareRule = new SpareRule();
+            return spareRule.IsSatisfiedBy(frame) ? spareRule.GetBonusCount() : 0;
         }
-        private static bool IsSpare(Frame frame)
+    }
+
+    internal class SpareRule
+    {
+        internal bool IsSatisfiedBy(Frame frame)
         {
             return frame.Score() == Roll.MAX_PIN;
+        }
+
+        internal int GetBonusCount()
+        {
+            return 1;
         }
     }
 
