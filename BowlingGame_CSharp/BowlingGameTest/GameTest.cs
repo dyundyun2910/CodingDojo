@@ -55,5 +55,16 @@ namespace BowlingGameTest
 
             Assert.ThrowsException<InvalidOperationException>(() => g.Roll(1));
         }
+
+        [TestMethod]
+        public void TestGutterGame()
+        {
+            for (int i = 0; i < 20; i++)
+            {
+                g.Roll(0);
+            }
+
+            Assert.AreEqual(0, g.Score());
+        }
     }
 }
