@@ -56,14 +56,20 @@ namespace BowlingGame
         private int CalculateFrame(Frame frame, Frames frames)
         {
             Rolls restRolls = frames.GetRestRolls(frame);
-
-            const int spareBonusCount = 1;
-            var bonusCount = IsSpare(frame) ? spareBonusCount : 0;
+            var bonusCount = BonusRule.GetBonusCount(frame);
 
             return restRolls.ToList().Take(bonusCount).Sum(roll => roll.ToInt());
         }
+    }
 
-        private bool IsSpare(Frame frame)
+    internal class BonusRule
+    {
+        internal static int GetBonusCount(Frame frame)
+        {
+            const int spareBonusCount = 1;
+            return IsSpare(frame) ? spareBonusCount : 0;
+        }
+        private static bool IsSpare(Frame frame)
         {
             return frame.Score() == Roll.MAX_PIN;
         }
