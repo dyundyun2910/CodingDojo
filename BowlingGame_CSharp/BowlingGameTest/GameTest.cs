@@ -69,7 +69,6 @@ namespace BowlingGameTest
             Assert.AreEqual(20, g.Score());
         }
 
-
         [TestMethod]
         public void TestOneSpare()
         {
@@ -81,6 +80,16 @@ namespace BowlingGameTest
             Assert.AreEqual(16, g.Score());
         }
 
+        [TestMethod]
+        public void TestOneStrike()
+        {
+            g.Roll(10); //Strike
+            g.Roll(3);
+            g.Roll(4);
+            ManyRolls(rollCount: 16, pins: 0);
+
+            Assert.AreEqual(24, g.Score());
+        }
 
         private void ManyRolls(int rollCount, int pins)
         {
