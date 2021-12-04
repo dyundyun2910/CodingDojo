@@ -108,6 +108,18 @@ namespace BowlingGameTest
             Assert.AreEqual(30, g.Score());
         }
 
+
+        [TestMethod]
+        public void TestTenFrameSpare()
+        {
+            ManyRolls(rollCount: 18, pins: 0);
+            g.Roll(5);
+            g.Roll(5);  //Spare
+            g.Roll(3);
+
+            Assert.AreEqual(13, g.Score());
+        }
+
         private void ManyRolls(int rollCount, int pins)
         {
             for (int i = 0; i < rollCount; i++)
