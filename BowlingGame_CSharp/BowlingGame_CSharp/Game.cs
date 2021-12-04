@@ -23,7 +23,10 @@ namespace BowlingGame
     {
         public static int Execute(Frames frames)
         {
-            var rules = new List<IScoreRule>() { new NormalScoreRule() };
+            var rules = new List<IScoreRule>() { 
+                new NormalScoreRule(),
+                new BonusScoreRule()
+            };
             return rules.Sum(rule => rule.Calculate(frames));
         }
     }
@@ -39,6 +42,28 @@ namespace BowlingGame
         {
             var framesList = frames.ToList();
             return framesList.Sum(frame => frame.Score());
+        }
+    }
+
+    internal class BonusScoreRule : IScoreRule
+    {
+        public int Calculate(Frames frames)
+        {
+            var framesList = frames.ToList();
+            return framesList.Sum(frame => CalculateFrame(frame, frames));
+        }
+
+        private int CalculateFrame(Frame frame, Frames frames)
+        {
+            var bonusCount = IsSpare(frame) ? 1 : 0;
+            Rolls restRolls = frames.GetRestRolls(frame);
+
+            return restRolls.ToList().Take(bonusCount).Sum(roll => roll.ToInt());
+        }
+
+        private bool IsSpare(Frame frame)
+        {
+            return frame.Score() == Roll.MAX_PIN;
         }
     }
 
@@ -68,6 +93,18 @@ namespace BowlingGame
         {
             return new List<Frame>(frames);
         }
+
+        internal Rolls GetRestRolls(Frame currentFrame)
+        {
+            var restFrames = frames.Where(frame => frames.IndexOf(frame) > frames.IndexOf(currentFrame));
+
+            var rolls = new List<Roll>();
+            restFrames.ToList().ForEach(frame =>
+            {
+                rolls.AddRange((frame.ToListRolls()));
+            });
+            return new Rolls(rolls);
+        }
     }
 
 
@@ -91,6 +128,11 @@ namespace BowlingGame
         internal int Score()
         {
             return rolls.Sum();
+        }
+
+        internal List<Roll> ToListRolls()
+        {
+            return new List<Roll>(rolls.ToList());
         }
     }
 
@@ -117,11 +159,16 @@ namespace BowlingGame
         {
             return rolls.Count();
         }
+
+        internal List<Roll> ToList()
+        {
+            return rolls.ToList();
+        }
     }
 
     internal class Roll
     {
-        private const int MAX_PIN = 10;
+        internal const int MAX_PIN = 10;
         private const int MIN_PIN = 0;
 
         private readonly int pins;
