@@ -70,6 +70,18 @@ namespace BowlingGameTest
         }
 
 
+        [TestMethod]
+        public void TestOneSpare()
+        {
+            g.Roll(5);
+            g.Roll(5);  //Spare
+            g.Roll(3);
+            ManyRolls(rollCount: 17, pins: 0);
+
+            Assert.AreEqual(16, g.Score());
+        }
+
+
         private void ManyRolls(int rollCount, int pins)
         {
             for (int i = 0; i < rollCount; i++)
