@@ -44,5 +44,16 @@ namespace BowlingGameTest
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => g.Roll(-1));
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => g.Roll(11));
         }
+
+        [TestMethod]
+        public void TestMaxRollCountIs21()
+        {
+            for (int i = 0; i < 21; i++)
+            {
+                g.Roll(0);
+            }
+
+            Assert.ThrowsException<InvalidOperationException>(() => g.Roll(1));
+        }
     }
 }
