@@ -61,6 +61,15 @@ namespace BowlingGameTest
             Assert.AreEqual(0, g.Score());
         }
 
+        [TestMethod]
+        public void TestAllOnes()
+        {
+            ManyRolls(rollCount: 20, pins: 1);
+
+            Assert.AreEqual(20, g.Score());
+        }
+
+
         private void ManyRolls(int rollCount, int pins)
         {
             for (int i = 0; i < rollCount; i++)
