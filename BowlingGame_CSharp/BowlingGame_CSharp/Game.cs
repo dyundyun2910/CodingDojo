@@ -6,16 +6,41 @@ namespace BowlingGame
 {
     public class Game
     {
-        private List<Roll> rolls;
-
-        public Game()
-        {
-            rolls = new List<Roll>();
-        }
+        private List<Frame> frames = new List<Frame>() { new Frame() };
 
         public void Roll(int pins)
         {
-            rolls.Add(new Roll(pins));
+            if (frames.Last().IsFull())
+            {
+                frames.Add(new Frame());
+            }
+            frames.Last().AddRoll(new Roll(pins));
+
+        }
+
+        public int Score()
+        {
+            int score = 0;
+            frames.ForEach(frame => score += frame.Score());
+            return score;
+        }
+    }
+
+    internal class Frame
+    {
+        private const int MAX_ROLLS = 2;
+
+        private List<Roll> rolls = new List<Roll>();
+
+        public void AddRoll(Roll roll)
+        {
+            if (IsFull()) throw new InvalidOperationException();
+            rolls.Add(roll);
+        }
+
+        public bool IsFull()
+        {
+            return rolls.Count >= MAX_ROLLS;
         }
 
         public int Score()
@@ -28,8 +53,8 @@ namespace BowlingGame
 
     internal class Roll
     {
-        const int MAX_PIN = 10;
-        const int MIN_PIN = 0;
+        private const int MAX_PIN = 10;
+        private const int MIN_PIN = 0;
 
         private int pins;
 
