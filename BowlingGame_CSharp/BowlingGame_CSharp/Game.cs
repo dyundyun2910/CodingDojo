@@ -6,16 +6,30 @@ namespace BowlingGame
 {
     public class Game
     {
-        private List<Frame> frames = new List<Frame>() { new Frame() };
+        private readonly Frames frames = new Frames();
 
         public void Roll(int pins)
+        {
+            frames.Roll(new Roll(pins));
+        }
+
+        public int Score()
+        {
+            return frames.Score();
+        }
+    }
+
+    internal class Frames
+    {
+        private List<Frame> frames = new List<Frame>() { new Frame() };
+
+        public void Roll(Roll roll)
         {
             if (frames.Last().IsFull())
             {
                 frames.Add(new Frame());
             }
-            frames.Last().AddRoll(new Roll(pins));
-
+            frames.Last().AddRoll(roll);
         }
 
         public int Score()
@@ -25,6 +39,7 @@ namespace BowlingGame
             return score;
         }
     }
+
 
     internal class Frame
     {
