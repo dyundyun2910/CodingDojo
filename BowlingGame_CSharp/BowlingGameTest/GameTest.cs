@@ -99,6 +99,15 @@ namespace BowlingGameTest
             Assert.AreEqual(300, g.Score());
         }
 
+        [TestMethod]
+        public void TestTenFrameTurkey()
+        {
+            ManyRolls(rollCount: 18, pins: 0);
+            ManyRolls(rollCount: 3, pins: 10);
+
+            Assert.AreEqual(30, g.Score());
+        }
+
         private void ManyRolls(int rollCount, int pins)
         {
             for (int i = 0; i < rollCount; i++)
