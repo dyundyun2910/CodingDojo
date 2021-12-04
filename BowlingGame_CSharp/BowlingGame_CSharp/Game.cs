@@ -22,7 +22,8 @@ namespace BowlingGame
     internal class Frames
     {
         private const int MAX_FRAMES = 10;
-        private List<Frame> frames = new List<Frame>() { new Frame() };
+
+        private readonly List<Frame> frames = new List<Frame>() { new Frame() };
 
         public void Roll(Roll roll)
         {
@@ -53,7 +54,7 @@ namespace BowlingGame
     {
         private const int MAX_ROLLS = 2;
 
-        private List<Roll> rolls = new List<Roll>();
+        private readonly List<Roll> rolls = new List<Roll>();
 
         public void AddRoll(Roll roll)
         {
@@ -79,7 +80,7 @@ namespace BowlingGame
         private const int MAX_PIN = 10;
         private const int MIN_PIN = 0;
 
-        private int pins;
+        private readonly int pins;
 
         public Roll(int pins)
         {
