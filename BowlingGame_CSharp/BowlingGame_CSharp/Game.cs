@@ -71,14 +71,20 @@ namespace BowlingGame
         }
     }
 
-    internal class SpareRule
+    interface IBonusRule
     {
-        internal bool IsSatisfiedBy(Frame frame)
+        bool IsSatisfiedBy(Frame frame);
+        int GetBonusCount();
+    }
+
+    internal class SpareRule : IBonusRule
+    {
+        public bool IsSatisfiedBy(Frame frame)
         {
             return frame.Score() == Roll.MAX_PIN;
         }
 
-        internal int GetBonusCount()
+        public int GetBonusCount()
         {
             return 1;
         }
