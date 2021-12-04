@@ -71,17 +71,14 @@ namespace BowlingGame
                 new StrikeRule()
             };
 
-            return rules.Sum(rule =>
-            {
-                return rule.IsSatisfiedBy(frame) ? rule.GetBonusCount() : 0;
-            });
+            return rules.Sum(rule => rule.GetBonusCount(frame));
         }
     }
 
     interface IBonusRule
     {
+        int GetBonusCount(Frame frame);
         bool IsSatisfiedBy(Frame frame);
-        int GetBonusCount();
     }
 
     internal class StrikeRule : IBonusRule
@@ -92,9 +89,10 @@ namespace BowlingGame
                 && frame.ToListRolls().Count == 1;
         }
 
-        public int GetBonusCount()
+        public int GetBonusCount(Frame frame)
         {
-            return 2;
+            if (IsSatisfiedBy(frame)) return 2;
+            return 0;
         }
     }
 
@@ -106,9 +104,10 @@ namespace BowlingGame
                 && frame.ToListRolls().Count == Frame.MAX_ROLLS;
         }
 
-        public int GetBonusCount()
+        public int GetBonusCount(Frame frame)
         {
-            return 1;
+            if (IsSatisfiedBy(frame)) return 2;
+            return 0;
         }
     }
 
