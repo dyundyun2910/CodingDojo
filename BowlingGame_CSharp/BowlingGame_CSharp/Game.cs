@@ -21,15 +21,23 @@ namespace BowlingGame
 
     internal class Frames
     {
+        private const int MAX_FRAMES = 10;
         private List<Frame> frames = new List<Frame>() { new Frame() };
 
         public void Roll(Roll roll)
         {
             if (frames.Last().IsFull())
             {
+                if (IsFull()) throw new InvalidOperationException();
                 frames.Add(new Frame());
             }
+
             frames.Last().AddRoll(roll);
+        }
+
+        private bool IsFull()
+        {
+            return frames.Count >= MAX_FRAMES;
         }
 
         public int Score()

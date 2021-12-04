@@ -46,9 +46,9 @@ namespace BowlingGameTest
         }
 
         [TestMethod]
-        public void TestMaxRollCountIs21()
+        public void TestNormalRollCountIs20()
         {
-            for (int i = 0; i < 21; i++)
+            for (int i = 0; i < 20; i++)
             {
                 g.Roll(0);
             }
