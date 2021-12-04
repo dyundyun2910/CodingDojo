@@ -15,7 +15,24 @@ namespace BowlingGame
 
         public int Score()
         {
-            return frames.Score();
+            return Calculator.Execute(frames);
+        }
+    }
+
+    internal class Calculator
+    {
+        public static int Execute(Frames frames)
+        {
+            return NormalScoreRule.Calculate(frames);
+        }
+
+    }
+    internal class NormalScoreRule
+    {
+        internal static int Calculate(Frames frames)
+        {
+            var framesList = frames.ToList();
+            return framesList.Sum(frame => frame.Score());
         }
     }
 
@@ -25,7 +42,7 @@ namespace BowlingGame
 
         private readonly List<Frame> frames = new List<Frame>() { new Frame() };
 
-        public void Roll(Roll roll)
+        internal void Roll(Roll roll)
         {
             if (frames.Last().IsFull())
             {
@@ -41,9 +58,9 @@ namespace BowlingGame
             return frames.Count >= MAX_FRAMES;
         }
 
-        public int Score()
+        internal List<Frame> ToList()
         {
-            return frames.Sum(frame => frame.Score());
+            return new List<Frame>(frames);
         }
     }
 
@@ -52,22 +69,47 @@ namespace BowlingGame
     {
         private const int MAX_ROLLS = 2;
 
-        private readonly List<Roll> rolls = new List<Roll>();
+        private Rolls rolls = new Rolls();
 
-        public void AddRoll(Roll roll)
+        internal void AddRoll(Roll roll)
         {
             if (IsFull()) throw new InvalidOperationException();
-            rolls.Add(roll);
+            rolls = rolls.Add(roll);
         }
 
-        public bool IsFull()
+        internal bool IsFull()
         {
-            return rolls.Count >= MAX_ROLLS;
+            return rolls.Count() >= MAX_ROLLS;
         }
 
-        public int Score()
+        internal int Score()
+        {
+            return rolls.Sum();
+        }
+    }
+
+    internal class Rolls
+    {
+        private readonly List<Roll> rolls;
+
+        internal Rolls() { rolls = new List<Roll>(); }
+        internal Rolls(List<Roll> rolls) { this.rolls = rolls; }
+
+        internal Rolls Add(Roll roll)
+        {
+            return new Rolls(
+                new List<Roll>(this.rolls){ roll }
+                );
+        }
+
+        internal int Sum()
         {
             return rolls.Sum(roll => roll.ToInt());
+        }
+
+        internal int Count()
+        {
+            return rolls.Count();
         }
     }
 
@@ -78,7 +120,7 @@ namespace BowlingGame
 
         private readonly int pins;
 
-        public Roll(int pins)
+        internal Roll(int pins)
         {
             if (pins < MIN_PIN) throw new ArgumentOutOfRangeException();
             if (pins > MAX_PIN) throw new ArgumentOutOfRangeException();
@@ -86,7 +128,7 @@ namespace BowlingGame
             this.pins = pins;
         }
 
-        public int ToInt()
+        internal int ToInt()
         {
             return pins;
         }
