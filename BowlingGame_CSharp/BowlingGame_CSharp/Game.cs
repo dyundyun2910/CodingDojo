@@ -27,6 +27,7 @@ namespace BowlingGame
                 new NormalScoreRule(),
                 new BonusScoreRule()
             };
+
             return rules.Sum(rule => rule.Calculate(frames));
         }
     }
@@ -58,20 +59,27 @@ namespace BowlingGame
             Rolls restRolls = frames.GetRestRolls(frame);
             var bonusCount = BonusRule.GetBonusCount(frame);
 
-            return restRolls.ToList().Take(bonusCount).Sum(roll => roll.ToInt());
+            return restRolls.TakeSum(bonusCount);
         }
     }
 
     internal class BonusRule
     {
-        internal static int GetBonusCount(Frame frame)
-        {
-            var rules = new List<IBonusRule>(){
+        static List<IBonusRule> rules = new List<IBonusRule>(){
                 new SpareRule(),
-                new StrikeRule()
+                new StrikeRule(),
+                new FinalFrameRule()
             };
 
+        internal static int GetBonusCount(Frame frame)
+        {
+            if (frame.IsFinalFrame()) return 0;
             return rules.Sum(rule => rule.GetBonusCount(frame));
+        }
+
+        internal static bool IsAnyBonus(Frame frame)
+        {
+            return rules.Any(rule => rule.IsSatisfiedBy(frame));
         }
     }
 
@@ -83,6 +91,8 @@ namespace BowlingGame
 
     internal class StrikeRule : IBonusRule
     {
+        private const int bonusCount = 2;
+
         public bool IsSatisfiedBy(Frame frame)
         {
             return frame.Score() == Roll.MAX_PIN
@@ -91,13 +101,15 @@ namespace BowlingGame
 
         public int GetBonusCount(Frame frame)
         {
-            if (IsSatisfiedBy(frame)) return 2;
+            if (IsSatisfiedBy(frame)) return bonusCount;
             return 0;
         }
     }
 
     internal class SpareRule : IBonusRule
     {
+        private const int bonusCount = 1;
+
         public bool IsSatisfiedBy(Frame frame)
         {
             return frame.Score() == Roll.MAX_PIN
@@ -106,8 +118,25 @@ namespace BowlingGame
 
         public int GetBonusCount(Frame frame)
         {
-            if (IsSatisfiedBy(frame)) return 2;
+            if (IsSatisfiedBy(frame)) return bonusCount;
             return 0;
+        }
+    }
+
+    internal class FinalFrameRule : IBonusRule
+    {
+        private const int bonusCount = 0;
+
+        public bool IsSatisfiedBy(Frame frame)
+        {
+            if (!frame.IsFinalFrame()) return false;
+
+            return frame.ToListRolls().Take(2).Sum(roll => roll.ToInt()) >= Roll.MAX_PIN;
+        }
+
+        public int GetBonusCount(Frame frame)
+        {
+            return bonusCount;
         }
     }
 
@@ -115,25 +144,44 @@ namespace BowlingGame
     {
         private const int MAX_FRAMES = 10;
 
-        private readonly List<Frame> frames = new List<Frame>() { new Frame() };
+        private readonly List<Frame> frames = new List<Frame>() { new NormalFrame() };
 
         internal void Roll(Roll roll)
         {
+            if (IsGameFull()) throw new InvalidOperationException();
+
             var lastFrame = frames.Last();
             if (lastFrame.IsFull())
             {
-                if (IsFull()) throw new InvalidOperationException();
-
-                frames.Add(new Frame());
+                AddFrame();
                 lastFrame = frames.Last();
             }
 
             lastFrame.AddRoll(roll);
         }
 
-        private bool IsFull()
+        private bool IsGameFull()
         {
-            return frames.Count >= MAX_FRAMES;
+            if (frames.Count < MAX_FRAMES) return false;
+
+            var lastFrame = frames.Last();
+            return lastFrame.IsFull();
+        }
+
+        private void AddFrame()
+        {
+            if (IsNextFinalFrame())
+            {
+                frames.Add(new FinalFrame());
+                return;
+            }
+
+            frames.Add(new NormalFrame());
+        }
+
+        private bool IsNextFinalFrame()
+        {
+            return frames.Count == MAX_FRAMES - 1;
         }
 
         internal List<Frame> ToList()
@@ -155,23 +203,19 @@ namespace BowlingGame
         }
     }
 
-
-    internal class Frame
+    abstract class Frame
     {
-        internal const int MAX_ROLLS = 2;
+        public const int MAX_ROLLS = 2;
+        
+        protected Rolls rolls = new Rolls();
 
-        private Rolls rolls = new Rolls();
+        abstract internal bool IsFull();
+        abstract internal bool IsFinalFrame();
 
         internal void AddRoll(Roll roll)
         {
             if (IsFull()) throw new InvalidOperationException();
             rolls = rolls.Add(roll);
-        }
-
-        internal bool IsFull()
-        {
-            return rolls.Count() >= MAX_ROLLS
-                || rolls.Sum() == Roll.MAX_PIN;
         }
 
         internal int Score()
@@ -182,6 +226,37 @@ namespace BowlingGame
         internal List<Roll> ToListRolls()
         {
             return new List<Roll>(rolls.ToList());
+        }
+    }
+
+    internal class NormalFrame : Frame
+    {
+
+        internal override bool IsFull()
+        {
+            return rolls.Count() >= Frame.MAX_ROLLS
+                || rolls.Sum() == Roll.MAX_PIN;
+        }
+
+        internal override bool IsFinalFrame()
+        {
+            return false;
+        }
+    }
+
+    internal class FinalFrame : Frame
+    {
+        private const int MAX_ROLLS_FINAL_BONUS = 3;
+
+        internal override bool IsFull()
+        {
+            var maxRolls = BonusRule.IsAnyBonus(this) ? MAX_ROLLS_FINAL_BONUS : Frame.MAX_ROLLS;
+            return rolls.Count() >= maxRolls;
+        }
+
+        internal override bool IsFinalFrame()
+        {
+            return true;
         }
     }
 
@@ -202,6 +277,11 @@ namespace BowlingGame
         internal int Sum()
         {
             return rolls.Sum(roll => roll.ToInt());
+        }
+
+        internal int TakeSum(int takeCount)
+        {
+            return rolls.Take(takeCount).Sum(roll => roll.ToInt());
         }
 
         internal int Count()
