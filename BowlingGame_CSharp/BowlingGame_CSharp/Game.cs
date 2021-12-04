@@ -23,13 +23,19 @@ namespace BowlingGame
     {
         public static int Execute(Frames frames)
         {
-            return NormalScoreRule.Calculate(frames);
+            var rules = new List<IScoreRule>() { new NormalScoreRule() };
+            return rules.Sum(rule => rule.Calculate(frames));
         }
-
     }
-    internal class NormalScoreRule
+
+    interface IScoreRule
     {
-        internal static int Calculate(Frames frames)
+        int Calculate(Frames frames);
+    }
+
+    internal class NormalScoreRule : IScoreRule
+    {
+        public int Calculate(Frames frames)
         {
             var framesList = frames.ToList();
             return framesList.Sum(frame => frame.Score());
