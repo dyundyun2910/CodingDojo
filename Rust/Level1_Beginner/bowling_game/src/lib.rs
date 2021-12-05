@@ -38,10 +38,20 @@ mod tests {
     #[test]
     fn gutter_game() {
         let mut game = Game { score: 0 };
-        for _n in 1..20 {
+        for _n in 1..=20 {
             game.roll(0);
         }
 
         assert_eq!(0, game.score());
+    }
+
+    #[test]
+    fn all_ones() {
+        let mut game = Game { score: 0 };
+        for _n in 1..=20 {
+            game.roll(1);
+        }
+
+        assert_eq!(20, game.score());
     }
 }
